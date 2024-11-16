@@ -1,0 +1,5 @@
+# config.yaml
+defaults:
+  - hf_config
+  - wandb_config
+  - dataset

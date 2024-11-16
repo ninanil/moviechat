@@ -1,0 +1,19 @@
+dagshub:
+    repo_owner:'ninanildev'
+    repo_name:'moviechat'
+    dvc:
+    
+    dataset:
+      cornell_dataset:
+        to_dagshub: true
+        dataset_path: "/dataset"
+      movieqa:
+        to_dagshub: true
+        dataset_path: "/dataset"
+      combined_dataset:
+        to_dagshub: true
+        dataset_path: "/dataset"
+        description: "Comined dataset with 70 "
+    checkpoint:
+      to_dagshub: true
+      model_path: "/dataset"

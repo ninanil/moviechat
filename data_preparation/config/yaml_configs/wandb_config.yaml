@@ -1,0 +1,39 @@
+wandb:
+  api_token: ${oc.env:WANDB_API_TOKEN}
+  project_name: Moviechat
+  entity: niloufarcolab6-n
+
+  # DataLoader specific settings
+  dataloader:
+    cornell_dataset:
+      to_wandb: true
+      json_artifact_name: cornell_movie_dialogues_dataset
+      csv_artifact_name: cornell_movie_dialogues_dataset_csv
+      description: |
+        Cornell Movie-Dialogs Corpus, extracted from raw movie scripts.
+        (220,579 conversational exchanges between 10,292 pairs of movie characters
+        in 617 movies)
+    movieqa_dataset:
+      to_wandb: true
+      json_artifact_name: movieqa_dataset
+      csv_artifact_name: movieqa_dataset_csv
+      description: |
+        The MovieQA dataset is a dataset for movie question answering. It
+        is obtained from over 400 movies and features.
+    combined_dataset:
+      to_wandb: true
+      json_artifact_name: combined_movie_dataset
+      description: combined dataset with a 70-5-25 split for training, test, and validation.
+
+  # Movie Fetcher specific settings
+  movie_fetcher:
+    cornell_dataset:
+      to_wandb: true
+      artifact_name: imdb_cornell_movie_dataset
+      artifact_type: dataset
+      artifact_description: Information about the movies from IMDb for Cornell.
+    movieqa_dataset:
+      to_wandb: true
+      artifact_name: imdb_movieqa_movie_dataset
+      artifact_type: dataset
+      artifact_description: Information about the movies from IMDb for MovieQA.

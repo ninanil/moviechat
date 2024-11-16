@@ -1,0 +1,95 @@
+cornell_dataset:
+  folder_path: "./cornell"
+  output_path: "cornell_movie_data.json"
+  sample_fraction: 0.2
+  train_ratio: 0.7
+  test_ratio: 0.297
+  generate_new_questions: true  
+  data_prune_enabled: true
+  frequent_sample_ratio: 60
+  files:
+    movie_conversations:
+      file_name: "movie_conversations.txt"
+      sep: ' \+\+\+\$\+\+\+ '
+      encoding: "iso-8859-1"
+      columns:
+        - "character_id1"
+        - "character_id2"
+        - "movie_id"
+        - "line_id_list"
+    movie_lines:
+      file_name: "movie_lines.txt"
+      sep: ' \+\+\+\$\+\+\+ '
+      encoding: "iso-8859-1"
+      columns:
+        - "character_id1"
+        - "movie_id"
+        - "character_name"
+        - "utterance"
+    movie_titles_metadata:
+      file_name: "movie_titles_metadata.txt"
+      sep: ' \+\+\+\$\+\+\+ '
+      encoding: "iso-8859-1"
+      columns:
+        - "movie_id"
+        - "movie_name"
+        - "release_year"
+        - "imdb_rating"
+        - "num_imdb_votes"
+        - "genre"
+    movie_characters_metadata:
+      file_name: "movie_characters_metadata.txt"
+      sep: ' \+\+\+\$\+\+\+ '
+      encoding: "iso-8859-1"
+      columns:
+        - "character_id"
+        - "character_name"
+        - "movie_id"
+        - "movie_name"
+        - "gender"
+        - "position"
+    imdb_movie_detailed:
+      file_name: "imdb_cornell_movie_dataset.csv"
+      sep: ","  
+      encoding: "utf-8"  
+      columns:
+        - "movie_name"
+        - "year"
+        - "kind"
+        - "cover_url"
+        - "original_title"
+        - "localized_title"
+        - "genres"
+        - "runtimes"
+        - "countries"
+        - "language_codes"
+        - "rating"
+        - "votes"
+        - "imdbID"
+        - "plot_outline"
+        - "languages"
+        - "director"
+        - "writer"
+        - "cast"
+        - "box_office"
+        - "plot"
+        - "synopsis"
+movieqa_dataset:
+  folder_path: "./movieqa"
+  output_path: "movieqa_movie_data.json"
+  train_ratio:
+    0.8
+  test_ratio:
+    0.195
+  files:
+    qa:
+      file_name: "qa.json"
+    movies:
+      file_name: "movies.json"
+    imdb_movie_details_movieqa:
+       file_name: "imdb_movie_details_movieqa.csv"
+       sep: ","
+       encoding: "utf-8"
+       columns:
+        - "title"
+        - "plot_outline"

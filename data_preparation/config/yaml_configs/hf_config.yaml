@@ -1,0 +1,19 @@
+hf:    
+   repo_id: "niloufarna/MovieChat"
+   api_token: ${oc.env:HF_API_TOKEN}
+   allow_patterns:
+     - "cornell/*"
+     - "movieqa/*"
+   cornell_dataset:
+     to_hf: true
+     path_in_repo: "dataset/"
+     file_name: "cornell_movie_dialogues_dataset.json"
+   movieqa_dataset:
+     to_hf: true
+     path_in_repo: "dataset/movieqa_dataset.json"
+   combined_dataset:
+     to_hf: true
+     path_in_repo: "dataset/"
+     file_name: "combined_movie_dataset.json"
+     commit_message: "Add combined dataset for training, testing, and validation."
+     commit_description: "Uploading the combined dataset with a 70-0.1-29.9 split for training, testing, and validation"
