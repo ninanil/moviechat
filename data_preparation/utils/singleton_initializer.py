@@ -18,11 +18,15 @@ class SingletonInitializer:
     A Singleton class to initialize Hydra, WandB, and Hugging Face API services.
     """
     _instance = None
+    # Initialize the HydraConfigLocator
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(SingletonInitializer, cls).__new__(cls)
         return cls._instance
+    def __init__(self):
+        # Initialize the HydraConfigLocator
+        self.locator = HydraConfigLocator()
 
     def initialize_hydra(self, config_path: str, config_name: str):
         """
@@ -32,14 +36,13 @@ class SingletonInitializer:
             GlobalHydra.instance().clear()
         hydra.initialize(config_path=config_path, version_base="1.1")
         cfg = hydra.compose(config_name=config_name)
-        # Initialize the HydraConfigLocator
-        locator = HydraConfigLocator()
+        
 
         # Set the working directory to the directory of the main script
-        locator.working_directory = Path(__file__).parent.parent
+        self.locator.working_directory = Path(__file__).parent.parent
 
         # Set the Hydra configuration
-        locator.config = cfg
+        self.locator.config = cfg
         logger.info("Hydra initialized successfully.")
         return cfg
 
@@ -48,7 +51,7 @@ class SingletonInitializer:
         Initialize external services like WandB and Hugging Face API.
         """
         # Load environment variables
-        load_dotenv(Path.cwd() / "config/yaml_configs/.env")
+        load_dotenv(self.locator.working_directory / "config/yaml_configs/.env")
         logger.info("Environment variables loaded.")
 
         # Initialize WandB

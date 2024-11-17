@@ -11,9 +11,6 @@ cfg = initializer.initialize_hydra(config_path="../config/yaml_configs", config_
 # Initialize services
 run, api = initializer.initialize_services(cfg)
 
-working_directory = os.getcwd()  # Returns the current working directory
-
-
 # Use CornellMovieFetcher
 cornell_fetcher_config = cfg.wandb.movie_fetcher.cornell_dataset
 cornell_fetcher = CornellMovieFetcher(cornell_fetcher_config, "datasets/cornell/movie_titles_metadata.txt")
