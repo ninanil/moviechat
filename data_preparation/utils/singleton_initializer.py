@@ -9,7 +9,7 @@ from pathlib import Path
 from service.service_locator import ServiceLocator
 from huggingface_hub import snapshot_download
 import logging
-from utils.hydra_config_locator import HydraConfigLocator
+from service.hydra_config_locator import HydraConfigLocator
 
 logger = logging.getLogger(__name__)
 
