@@ -6,9 +6,10 @@ import hydra
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import OmegaConf
 from pathlib import Path
-from service_locator import ServiceLocator
+from service.service_locator import ServiceLocator
 from huggingface_hub import snapshot_download
 import logging
+from utils.hydra_config_locator import HydraConfigLocator
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,14 @@ class SingletonInitializer:
             GlobalHydra.instance().clear()
         hydra.initialize(config_path=config_path, version_base="1.1")
         cfg = hydra.compose(config_name=config_name)
+        # Initialize the HydraConfigLocator
+        locator = HydraConfigLocator()
+
+        # Set the working directory to the directory of the main script
+        locator.working_directory = Path(__file__).parent.parent
+
+        # Set the Hydra configuration
+        locator.config = cfg
         logger.info("Hydra initialized successfully.")
         return cfg
 
@@ -45,7 +54,7 @@ class SingletonInitializer:
         # Initialize WandB
         wandb.login(key=cfg.wandb.api_token)
         run = wandb.init(project=cfg.wandb.project_name, entity=cfg.wandb.entity)
-        ServiceLocator.register_service("wandb_run", run)
+        ServiceLocator.register_service("wandb", run)
 
         # Initialize Hugging Face API
         login(cfg.hf.api_token)

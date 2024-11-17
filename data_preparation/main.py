@@ -6,7 +6,7 @@ from utils.singleton_initializer import SingletonInitializer
 initializer = SingletonInitializer()
 
 # Initialize Hydra
-cfg = initializer.initialize_hydra(config_path="../input/config", config_name="config")
+cfg = initializer.initialize_hydra(config_path="../config/yaml_configs", config_name="config")
 
 # Initialize services
 run, api = initializer.initialize_services(cfg)
@@ -16,14 +16,14 @@ working_directory = os.getcwd()  # Returns the current working directory
 
 # Use CornellMovieFetcher
 cornell_fetcher_config = cfg.wandb.movie_fetcher.cornell_dataset
-cornell_fetcher = CornellMovieFetcher(cornell_fetcher_config, "movie_titles_metadata.txt")
+cornell_fetcher = CornellMovieFetcher(cornell_fetcher_config, "datasets/cornell/movie_titles_metadata.txt")
 
 # Load, preprocess, and save movie data
 cornell_fetcher.process_movie_data()
 
 # Use MovieQAFetcher
 movieqa_fetcher_config = cfg.wandb.movie_fetcher.movieqa_dataset
-movieqa_fetcher = MovieQAFetcher(movieqa_fetcher_config, "movieqa_metadata.csv")
+movieqa_fetcher = MovieQAFetcher(movieqa_fetcher_config, "datasets/movieqa/movieqa_metadata.csv")
 
 # Load, preprocess, fetch movie details, and save movie data
 # Load, preprocess, and save movie data
