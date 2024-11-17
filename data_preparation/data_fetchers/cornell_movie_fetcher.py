@@ -1,7 +1,7 @@
 from data_fetchers.movie_fetcher import BaseMovieFetcher
-
-import logger, os
+import os
 from pathlib import Path
+from utils.logger import get_logger
 
 class CornellMovieFetcher(BaseMovieFetcher):
     def __init__(self, config, file_name):
@@ -13,6 +13,8 @@ class CornellMovieFetcher(BaseMovieFetcher):
         """
         super().__init__(config)  # Pass the config to the base class
         self.file_name = file_name
+        self.logger = get_logger(self.__class__.__name__)
+        
     def load(self):
         """
         Load the Cornell movie metadata from the file.
@@ -33,10 +35,10 @@ class CornellMovieFetcher(BaseMovieFetcher):
                 names=['movie_id', 'movie_name', 'release_year', 'imdb_rating', 'num_imdb_votes', 'genre'],
                 encoding='iso-8859-1'
             )
-            logger.info(f"Cornell movie metadata loaded successfully from {file_path}.")
+            self.logger.info(f"Cornell movie metadata loaded successfully from {file_path}.")
             return movie_metadata_df
         except Exception as e:
-            logger.error(f"Error loading Cornell movie metadata: {e}")
+            self.logger.error(f"Error loading Cornell movie metadata: {e}")
             raise
         
     def preprocess(self, movie_df):
@@ -53,8 +55,8 @@ class CornellMovieFetcher(BaseMovieFetcher):
             movie_year_df = movie_df[['movie_name','release_year']].drop_duplicates()
 
             movie_year_df['release_year'] = movie_year_df.release_year.str.replace(r'\D',"", regex = True).astype(int)
-            logger.info("Cornell dataset preprocessing completed.")
+            self.logger.info("Cornell dataset preprocessing completed.")
             return movie_year_df
         except Exception as e:
-            logger.error(f"Error during preprocessing: {e}")
+            self.logger.error(f"Error during preprocessing: {e}")
             raise

@@ -1,4 +1,4 @@
-from config.config_loader import ConfigLoader
+from config.config_loader.config_loader import ConfigLoader
 
 class DataLoaderFactory:
     """

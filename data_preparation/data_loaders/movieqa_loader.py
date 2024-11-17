@@ -2,12 +2,13 @@ import os
 import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import logging
 from service.service_locator import ServiceLocator
 from service.hydra_config_locator import HydraConfigLocator
+from utils.logger import get_logger
 
 class MovieQADataLoader(BaseDataLoader):
     def __init__(self,config):
+        self.logger = get_logger(self.__class__.__name__)
         self.config = config  # Retrieve the config from the locator
         self.qa_dataset = []
         self.qa_movie_metadata_df = pd.DataFrame()
@@ -28,28 +29,28 @@ class MovieQADataLoader(BaseDataLoader):
                 else:
                     qa_df_list.append(self._read_csv_file(file_config))
             
-            logger.info("Data loaded successfully.")
+            self.logger.info("Data loaded successfully.")
             return qa_df_list
         except Exception as e:
-            logger.error(f"Error loading data: {e}")
+            self.logger.error(f"Error loading data: {e}")
             raise
     def _read_json_file(self, data_path):
         try:
             qa_df = pd.read_json(data_path)
-            logger.info("Q&A JSON file loaded successfully.")
+            self.logger.info("Q&A JSON file loaded successfully.")
             return qa_df
         except Exception as e:
-            logger.error(f"Error loading Q&A JSON file: {e}")
+            self.logger.error(f"Error loading Q&A JSON file: {e}")
             raise
     def _read_csv_file(self, file):
         try:
             path = os.path.join(self.config.folder_path, file['file_name'])
             qa_df = pd.read_csv(path, usecols=file['columns'], 
                                 sep = file['sep'], encoding=file['encoding'])
-            logger.info("Q&A CSV file loaded successfully.")
+            self.logger.info("Q&A CSV file loaded successfully.")
             return qa_df
         except Exception as e:
-            logger.error(f"Error loading Q&A JSON file: {e}")
+            self.logger.error(f"Error loading Q&A JSON file: {e}")
             raise
     def preprocess_data(self,df_list):
         qa_df, movie_df, imdb_details_df = df_list
@@ -113,7 +114,7 @@ class MovieQADataLoader(BaseDataLoader):
                 random_state=42
             )
         except ValueError as e:
-            logger.warning(f"Stratified split failed: {e}. Falling back to non-stratified split.")
+            self.logger.warning(f"Stratified split failed: {e}. Falling back to non-stratified split.")
             test_data,val_data = train_test_split(
                 temp_data, 
                 train_size=test_size, 
@@ -129,9 +130,9 @@ class MovieQADataLoader(BaseDataLoader):
         self.qa_movie_metadata_df = pd.concat([train_data, val_data, test_data], ignore_index=True)
 
         # Logging the size of each dataset
-        logger.info(f"Training set size: {len(train_data)}")
-        logger.info(f"Validation set size: {len(val_data)}")
-        logger.info(f"Test set size: {len(test_data)}")
+        self.logger.info(f"Training set size: {len(train_data)}")
+        self.logger.info(f"Validation set size: {len(val_data)}")
+        self.logger.info(f"Test set size: {len(test_data)}")
         return self.qa_movie_metadata_df
     
     def save_data(self):
@@ -139,7 +140,7 @@ class MovieQADataLoader(BaseDataLoader):
             full_output_path = os.path.join(self.config.folder_path ,self.config.output_path)#os.path.join(self.folder_path,self.output_path)
             with open(full_output_path, 'w', encoding='utf-8') as f:
                 json.dump(self.qa_dataset, f, ensure_ascii=False, indent=4)
-            logger.info(f"Q&A Movie dataset saved to {self.config.output_path}")
+            self.logger.info(f"Q&A Movie dataset saved to {self.config.output_path}")
             if self.cfg.wandb.movieqa_dataset.to_wandb:
                 artifact = self.wandb.Artifact(name=self.cfg.wandb.movieqa_dataset.json_artifact_name, 
                                           description= self.cfg.wandb.movieqa_dataset.description, type='dataset')  # Name and type for the artifact
@@ -153,10 +154,10 @@ class MovieQADataLoader(BaseDataLoader):
                     path_in_repo = self.cfg.hf.movieqa_dataset.path_in_repo,
                     repo_type="dataset",
                     )
-                logger.info(f"Artifact {self.config.output_path}  logged to Huggingface successfully.")
+                self.logger.info(f"Artifact {self.config.output_path}  logged to Huggingface successfully.")
             return full_output_path
          except Exception as e:
-            logger.error(f"Error saving data: {e}")
+            self.logger.error(f"Error saving data: {e}")
             raise
     def _save_df(self):
         """
@@ -166,7 +167,7 @@ class MovieQADataLoader(BaseDataLoader):
             output_path = os.path.join(self.config.folder_path ,'qa_movie_df.csv')
             # Save the DataFrame to a CSV file
             self.qa_movie_metadata_df.to_csv(output_path, index=False)
-            logger.info(f"DataFrame saved as CSV file at '{output_path}'.")
+            self.logger.info(f"DataFrame saved as CSV file at '{output_path}'.")
             
             if self.cfg.wandb.movieqa_dataset.to_wandb:
                 # Create a WandB artifact
@@ -178,11 +179,11 @@ class MovieQADataLoader(BaseDataLoader):
     
                 # Add the saved CSV file to the artifact
                 artifact.add_file(output_path)
-                logger.info(f"CSV file '{output_path}' added to WandB artifact qa_movie_df.")
+                self.logger.info(f"CSV file '{output_path}' added to WandB artifact qa_movie_df.")
     
                 # Save the artifact
                 artifact.save()
-                logger.info(f"Artifact qa_movie_df  logged to WandB successfully.")
+                self.logger.info(f"Artifact qa_movie_df  logged to WandB successfully.")
 
         except Exception as e:
-            logger.error(f"Error saving DataFrame or uploading to WandB: {e}")
+            self.logger.error(f"Error saving DataFrame or uploading to WandB: {e}")

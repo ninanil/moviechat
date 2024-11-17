@@ -4,6 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 from service.service_locator import ServiceLocator
 from service.hydra_config_locator import HydraConfigLocator
+from utils.logger import get_logger
 
 class BaseDataLoader(ABC):
     """
@@ -11,7 +12,7 @@ class BaseDataLoader(ABC):
     """
     
     def __init__(self):
-        pass
+        self.logger = get_logger(self.__class__.__name__)
     
     @abstractmethod
     def load_data(self):
@@ -82,16 +83,16 @@ class BaseDataLoader(ABC):
             # Open and read the first JSON file
             with open(file_path1, "r") as file1:
                 data1 = json.load(file1)
-            logging.info(f"Successfully loaded data from {file_path1}")
+            self.logger.info(f"Successfully loaded data from {file_path1}")
 
             # Open and read the second JSON file
             with open(file_path2, "r") as file2:
                 data2 = json.load(file2)
-            logging.info(f"Successfully loaded data from {file_path2}")
+            self.logger.info(f"Successfully loaded data from {file_path2}")
 
             # Concatenate the data from both files
             data = data1 + data2
-            logging.info(f"Successfully concatenated data from {file_path1} and {file_path2}")
+            self.logger.info(f"Successfully concatenated data from {file_path1} and {file_path2}")
             full_output_path = os.path.join(".",cfg.hf.combined_dataset.file_name)
             with open(full_output_path, 'w', encoding='utf-8') as file:
                     json.dump(data, file, ensure_ascii=False, indent=4)
@@ -104,21 +105,21 @@ class BaseDataLoader(ABC):
                 commit_message=cfg.hf.combined_dataset.commit_message,
                 commit_description=cfg.hf.combined_dataset.commit_description
                     )
-                logger.info(f"File {cfg.hf.combined_dataset.file_name}  logged to Huggingface successfully.")
+                self.logger.info(f"File {cfg.hf.combined_dataset.file_name}  logged to Huggingface successfully.")
                 if cfg.wandb.combined_dataset.to_wandb:
                     artifact = wandb.Artifact(name=cfg.wandb.combined_dataset.json_artifact_name, 
                                           description= cfg.wandb.combined_dataset.description, type='dataset')  # Name and type for the artifact
                     artifact.add_file(full_output_path)  # Add the saved JSON file to the artifact
-                                        artifact.save()
-                    logger.info(f"File {cfg.hf.combined_dataset.file_name}  logged to WandB successfully.")
+                    artifact.save()
+                    self.logger.info(f"File {cfg.hf.combined_dataset.file_name}  logged to WandB successfully.")
         except FileNotFoundError as e:
-            logging.error(f"File not found: {e}")
+            self.logger.error(f"File not found: {e}")
             raise
 
         except json.JSONDecodeError as e:
-            logging.error(f"Error decoding JSON: {e}")
+            self.logger.error(f"Error decoding JSON: {e}")
             raise
 
         except Exception as e:
-            logging.error(f"An unexpected error occurred: {e}")
+            self.logger.error(f"An unexpected error occurred: {e}")
             raise

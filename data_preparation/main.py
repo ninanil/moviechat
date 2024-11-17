@@ -1,6 +1,10 @@
 import os
 from huggingface_hub import HfApi, login, snapshot_download
 from utils.singleton_initializer import SingletonInitializer
+from data_fetchers.cornell_movie_fetcher import CornellMovieFetcher
+from data_fetchers.movieqa_fetcher import MovieQAFetcher
+from data_loaders.data_loader_factory import DataLoaderFactory
+from data_loaders.base_dataloader import BaseDataLoader
 
 # Get the singleton instance
 initializer = SingletonInitializer()

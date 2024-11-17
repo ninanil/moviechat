@@ -2,7 +2,7 @@ import os
 import json
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import logging
+from utils.logger import get_logger
 from service.service_locator import ServiceLocator
 from service.hydra_config_locator import HydraConfigLocator
 
@@ -12,7 +12,8 @@ class CornellDataLoader(BaseDataLoader):
     """
 
     def __init__(self, config):
-        
+    
+        self.logger = get_logger(self.__class__.__name__)
         self.config = config
         self.movie_dataset_df = pd.DataFrame()
         self.movie_dataset = []
@@ -29,10 +30,10 @@ class CornellDataLoader(BaseDataLoader):
         """
         try:
             movie_df_list = [self._read_csv_file(file_key) for file_key in self.config.files ]
-            logger.info("Data loaded successfully.")
+            self.logger.info("Data loaded successfully.")
             return movie_df_list
         except Exception as e:
-            logger.error(f"Error loading data: {e}")
+            self.logger.error(f"Error loading data: {e}")
             raise
 
     def _read_csv_file(self, file_kay):
@@ -47,13 +48,13 @@ class CornellDataLoader(BaseDataLoader):
             column_names = file_config['columns']
             df = pd.read_csv(path, engine='python', sep = file_config['sep'], 
                              names = column_names, encoding=file_config['encoding'])
-            logger.debug(f"Loaded data from {path} with columns {column_names}.")
+            self.logger.debug(f"Loaded data from {path} with columns {column_names}.")
             return df
         except FileNotFoundError:
-            logger.error(f"File not found: {path}")
+            self.logger.error(f"File not found: {path}")
             raise
         except pd.errors.ParserError as e:
-            logger.error(f"Parser error while reading {path}: {e}")
+            self.logger..error(f"Parser error while reading {path}: {e}")
             raise
             
     def preprocess_data(self, df_list):
@@ -85,12 +86,12 @@ class CornellDataLoader(BaseDataLoader):
             
             imdb_details_df = imdb_details_df[['movie_name', 'plot_outline']]
             print("preprocess imdb_details_df", imdb_details_df.columns)
-            logger.info("Data preprocessing completed successfully.")
+            self.logger..info("Data preprocessing completed successfully.")
 
             return movie_conversation_df, movie_utterances_df, movie_metadata_df, characters_df, imdb_details_df
 
         except Exception as e:
-            logger.error(f"Error during data preprocessing: {str(e)}")
+            self.logger.error(f"Error during data preprocessing: {str(e)}")
             raise  # Re-raise the exception after logging
     
     def _row_to_json(self, row):
@@ -135,9 +136,9 @@ class CornellDataLoader(BaseDataLoader):
             self.movie_dataset = self.movie_dataset_df.apply(self._row_to_json, axis=1).tolist()
             
         
-            logger.info("Data converted to JSON format successfully.")
+            self.logger.info("Data converted to JSON format successfully.")
         except Exception as e:
-            logger.error(f"Error converting data to JSON: {e}")
+            self.logger.error(f"Error converting data to JSON: {e}")
             raise
     def _generate_samples(self, row):
         """
@@ -234,7 +235,7 @@ class CornellDataLoader(BaseDataLoader):
         if clean_string:
             return clean_string
         else:
-            logger.warning(f"Could not parse: {value}")
+            self.logger.warning(f"Could not parse: {value}")
             return []
 
     def merge_dataframes(self, df_list):
@@ -335,12 +336,12 @@ class CornellDataLoader(BaseDataLoader):
             # Remove rows where 'utterance' or 'response' are NaN
             self.movie_dataset_df = movie_dataset_df.dropna(subset=['utterance', 'response'])
             self.movie_dataset_df.loc[:, 'instruction'] = 'Continue the conversation between the characters.'
-            logger.debug("DataFrames merged successfully.")
+            self.logger.debug("DataFrames merged successfully.")
             # Generate new samples if flagged
             if self.config.generate_new_questions:
                 # Sample a fraction of the data
                 sampled_df = self.movie_dataset_df.groupby('movie_name').agg({'character_names':'first','movie_name':'first','genre':'first', 'release_year':'first','imdb_rating':'mean', 'num_imdb_votes':'first'}).sample(frac=self.config.sample_fraction, random_state=42).reset_index(drop=True)
-                logger.info(f"Sampled {len(sampled_df)} data successfully.")
+                self.logger.info(f"Sampled {len(sampled_df)} data successfully.")
 
                 # Generate new samples from the sampled DataFrame
                 #new_sample_list = sampled_df.apply(self._generate_json_sample, axis=1).tolist()
@@ -354,20 +355,20 @@ class CornellDataLoader(BaseDataLoader):
             if self.config.data_prune_enabled:
                 self._data_pruning()
             self._save_df()
-            logger.debug(f"Total number of rows found in movie_dataset_df: {len(self.movie_dataset_df)}")
+            self.logger.debug(f"Total number of rows found in movie_dataset_df: {len(self.movie_dataset_df)}")
             return self.movie_dataset_df
         except Exception as e:
-            logger.error(f"Error merging DataFrames: {e}")
+            self.logger.error(f"Error merging DataFrames: {e}")
             raise
     def _data_pruning(self):
 
-        logger.info(f"Cornell dataset size before pruning: {self.movie_dataset_df.shape[0]} rows")
+        self.logger.info(f"Cornell dataset size before pruning: {self.movie_dataset_df.shape[0]} rows")
         filtered_movies = self.movie_dataset_df.groupby('movie_name').size()
         filtered_movies = filtered_movies[filtered_movies > self.config.frequent_sample_ratio].index
 
         # Filter the main dataset to include only those movies
         self.movie_dataset_df = self.movie_dataset_df[self.movie_dataset_df['movie_name'].isin(filtered_movies)].reset_index(drop = True)
-        logger.info(f"Cornell dataset size after pruning: {self.movie_dataset_df.shape[0]} rows")
+        self.logger.info(f"Cornell dataset size after pruning: {self.movie_dataset_df.shape[0]} rows")
         
     def train_val_test_split(self):
         # Filtering movies that appear more than 50 times
@@ -399,7 +400,7 @@ class CornellDataLoader(BaseDataLoader):
                 random_state=42
             )
         except ValueError as e:
-            logger.warning(f"Stratified split failed: {e}. Falling back to non-stratified split.")
+            self.logger.warning(f"Stratified split failed: {e}. Falling back to non-stratified split.")
             test_data,val_data = train_test_split(
                 temp_data, 
                 train_size=test_size, 
@@ -414,9 +415,9 @@ class CornellDataLoader(BaseDataLoader):
         self.movie_dataset_df = pd.concat([train_data, val_data, test_data], ignore_index=True)
 
         # Logging the size of each dataset
-        logger.info(f"Training set size: {len(train_data)}")
-        logger.info(f"Validation set size: {len(val_data)}")
-        logger.info(f"Test set size: {len(test_data)}")
+        self.logger.info(f"Training set size: {len(train_data)}")
+        self.logger.info(f"Validation set size: {len(val_data)}")
+        self.logger.info(f"Test set size: {len(test_data)}")
         
         return self.movie_dataset_df
 
@@ -428,23 +429,23 @@ class CornellDataLoader(BaseDataLoader):
             full_output_path  = os.path.join(self.config.folder_path, self.config.output_path)
             with open(full_output_path , 'w', encoding='utf-8') as f:
                 json.dump(self.movie_dataset, f, ensure_ascii=False, indent=4)
-            logger.info(f"Data saved to {full_output_path }")
+            self.logger.info(f"Data saved to {full_output_path }")
             if self.cfg.wandb.cornell_dataset.to_wandb:
                 artifact = self.wandb.Artifact(name = self.cfg.wandb.cornell_dataset.json_artifact_name,
                                           description = self.cfg.wandb.cornell_dataset.description,type='dataset')  # Name and type for the artifact
                 artifact.add_file(full_output_path)  # Add the saved JSON file to the artifact
                 artifact.save()
-                logger.info(f"JSON file '{self.config.output_path}' uploaded to WandB successfully.")
+                self.logger.info(f"JSON file '{self.config.output_path}' uploaded to WandB successfully.")
             if self.cfg.hf.cornell_dataset.to_hf:
                  self.api.upload_file(
                     path_or_fileobj=full_output_path,
                     repo_id=self.cfg.hf.repo_id,
                     path_in_repo=f"{self.cfg.hf.cornell_dataset.path_in_repo}{self.cfg.hf.cornell_dataset.file_name}",
                     repo_type="dataset")
-                 logger.info(f"File {self.config.output_path}  logged to Huggingface successfully.")
+                 self.logger.info(f"File {self.config.output_path}  logged to Huggingface successfully.")
             return full_output_path
         except Exception as e:
-            logger.error(f"Error saving data: {e}")
+            self.logger.error(f"Error saving data: {e}")
             raise
     
     def _save_df(self):
@@ -455,7 +456,7 @@ class CornellDataLoader(BaseDataLoader):
             output_path = os.path.join(self.config.folder_path,'movie_dataset.csv')
             # Save the DataFrame to a CSV file
             self.movie_dataset_df.to_csv(output_path, index=False)
-            logger.info(f"DataFrame saved as CSV file at '{output_path}'.")
+            self.logger.info(f"DataFrame saved as CSV file at '{output_path}'.")
             if self.cfg.wandb.cornell_dataset.to_wandb:
                 # Create a WandB artifact
                 artifact = self.wandb.Artifact(name = self.cfg.wandb.cornell_dataset.csv_artifact_name, type= 'dataset',
@@ -466,11 +467,11 @@ class CornellDataLoader(BaseDataLoader):
     
                 # Add the saved CSV file to the artifact
                 artifact.add_file(output_path)
-                logger.info(f"CSV file '{output_path}' added to WandB artifact cornell_movie_df.")
+                self.logger.info(f"CSV file '{output_path}' added to WandB artifact cornell_movie_df.")
     
                 # Save the artifact
                 wandb.log_artifact(artifact)
-                logger.info(f"Artifact cornell_movie_df logged to WandB successfully.")
+                self.logger.info(f"Artifact cornell_movie_df logged to WandB successfully.")
 
         except Exception as e:
-            logger.error(f"Error saving DataFrame or uploading to WandB: {e}")
+            self.logger.error(f"Error saving DataFrame or uploading to WandB: {e}")

@@ -3,8 +3,9 @@ from imdb import IMDb
 from imdb.Character import Character
 import pandas as pd
 from abc import ABC, abstractmethod
-import logger
+from utils.logger import get_logger
 from pathlib import Path
+from service.hydra_config_locator import HydraConfigLocator
 
 class BaseMovieFetcher(ABC):
     def __init__(self, config, csv_file_name='my_file.csv', batch_size=50, delay=5):
@@ -17,26 +18,26 @@ class BaseMovieFetcher(ABC):
         delay (int): Number of seconds to wait between batches.
         config: Hydra configuration object for the dataset.
         """
+        self.logger = get_logger(self.__class__.__name__)
         self.config = config
         self.ia = IMDb()
-        self.folder_path = folder_path
         self.csv_file_name = csv_file_name
         self.batch_size = batch_size
         self.delay = delay
         self.movie_data = []
         self.not_found_movies = []
-     def load(self):
+    def load(self):
         """
         Load the dataset from a CSV file.
         """
         try:
-            working_directory = Path.cwd()
-            csv_file_path = os.path.join(self.folder_path, self.csv_file_name)
+            working_directory = HydraConfigLocator().working_directory
+            csv_file_path = os.path.join(working_directory, self.csv_file_name)
             movie_df = pd.read_csv(csv_file_path)
-            logger.info(f"Dataset loaded successfully from {path}.")
+            self.logger.info(f"Dataset loaded successfully from {path}.")
             return movie_df
         except Exception as e:
-            logger.error(f"Error loading dataset: {e}")
+            self.logger.error(f"Error loading dataset: {e}")
             raise
 
     def fetch_movie_details(self, movie_df):
@@ -142,7 +143,7 @@ class BaseMovieFetcher(ABC):
         self.save_data()
         return processed_movie_df
 
-     def save_data(self):
+    def save_data(self):
         """
         Save the processed movie data to a CSV file and log it to WandB.
         """
@@ -150,7 +151,7 @@ class BaseMovieFetcher(ABC):
             output_path = os.path.join(self.folder_path, self.config.artifact_name)
             movie_data_df = pd.DataFrame(self.movie_data)
             movie_data_df.to_csv(output_path, index=False)
-            logger.info(f"Movie data saved to {output_path}.")
+            self.logger.info(f"Movie data saved to {output_path}.")
 
             # Save as WandB artifact using the ServiceLocator for the wandb service
             wandb = ServiceLocator.get_service("wandb")
@@ -166,9 +167,9 @@ class BaseMovieFetcher(ABC):
                 )
                 artifact.add_file(output_path)
                 artifact.save()
-                logger.info(f"Artifact saved to WandB: {self.config.artifact_name}.")
+                self.logger.info(f"Artifact saved to WandB: {self.config.artifact_name}.")
         except Exception as e:
-            logger.error(f"Error saving data: {e}")
+            self.logger.error(f"Error saving data: {e}")
             raise
         
     @abstractmethod
@@ -177,5 +178,5 @@ class BaseMovieFetcher(ABC):
         Abstract method for preprocessing data.
         Subclasses must implement this method.
         """
-        logger.info("Preprocessing method is not implemented.")
+        self.logger.info("Preprocessing method is not implemented.")
         pass

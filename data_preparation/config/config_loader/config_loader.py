@@ -1,5 +1,5 @@
 from omegaconf import OmegaConf
-from config_classes import CornellDatasetConfig, MovieQADatasetConfig
+from config.class_configs.dataset_config import CornellDatasetConfig, MovieQADatasetConfig
 
 class ConfigLoader:
     @staticmethod

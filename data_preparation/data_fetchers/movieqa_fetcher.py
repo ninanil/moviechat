@@ -1,6 +1,6 @@
 from data_fetchers.movie_fetcher import BaseMovieFetcher
 import pandas as pd
-import logger
+from utils.logger import get_logger
 import os
 from pathlib import Path
 
@@ -14,6 +14,8 @@ class MovieQAFetcher(BaseMovieFetcher):
         """
         super().__init__(config)  # Pass the config to the base class
         self.file_path =  file_path
+        self.logger = get_logger(self.__class__.__name__)
+        
     def load(self):
         working_directory =  Path.cwd()
         path =  os.path.join(working_directory, self.file_path)
@@ -22,8 +24,8 @@ class MovieQAFetcher(BaseMovieFetcher):
     def preprocess(self, movie_metadata_df):
         try:
             movie_df = movie_df[[ 'name', 'year']].rename(columns={'name':'movie_name','year':'release_year'})
-            logger.info("MovieQA dataset preprocessing completed.")
+            self.logger.info("MovieQA dataset preprocessing completed.")
             return movie_df
         except Exception as e:
-            logger.error(f"Error during preprocessing: {e}")
+            self.logger.error(f"Error during preprocessing: {e}")
             raise
