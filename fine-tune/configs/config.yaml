@@ -1,0 +1,10 @@
+defaults:
+  - model: model_config
+  - data: data_config
+  - training: training_config
+  - dagshub: dagshub_config
+  - _self_
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

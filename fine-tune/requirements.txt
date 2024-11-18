@@ -1,0 +1,14 @@
+torch
+transformers
+unsloth
+wandb
+dvc
+boto3
+evaluate
+rouge_score
+bert_score
+mlflow
+dagshub
+datasets
+trl
+hydra-core>=1.1
