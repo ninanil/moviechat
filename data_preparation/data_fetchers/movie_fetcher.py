@@ -72,7 +72,7 @@ class BaseMovieFetcher(ABC):
                 print(f"Batch {i // self.batch_size + 1} complete. Waiting {self.delay} seconds...")
                 time.sleep(self.delay)
 
-        self._save_data()
+        self.save_data()
 
     def _fetch_single_movie(self, title, year):
         """

@@ -1,1 +1,2 @@
 *.env
+data_preparation/outputs/*.json

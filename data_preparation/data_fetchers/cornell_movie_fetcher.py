@@ -2,6 +2,7 @@ from data_fetchers.movie_fetcher import BaseMovieFetcher
 import os
 from pathlib import Path
 from utils.logger import get_logger
+import pandas as pd
 
 class CornellMovieFetcher(BaseMovieFetcher):
     def __init__(self, config, file_name):
