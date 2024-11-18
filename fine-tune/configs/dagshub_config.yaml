@@ -1,0 +1,6 @@
+dagshub:
+  repo_owner: "ninanildev"
+  repo_name: "moviechat"
+  mlflow: true
+
+mlflow_tracking_uri: "https://dagshub.com/ninanildev/moviechat.mlflow"
