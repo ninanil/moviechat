@@ -9,7 +9,7 @@ MovieChat is a powerful project designed to fine-tune the LLaMA2 language model 
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Project Structure](#project-structure)
-- [Installation](#installation)
+- [Install and Run](#instal-and-run)
 - [Configuration](#configuration)
 - [Model Details](#model-details)
 - [Outputs](#outputs)
@@ -55,12 +55,11 @@ your_project/
 ├── README.md
 └── .gitignore
 ```
-## Installation
+## Install and Run
 
 ### Prerequisites
 
-- **Python 3.8+**  
-- **Git**  
+- **Python 3.8+**   
 - **CUDA-enabled GPU** (for training)  
 - **DVC** installed for data versioning  
 
@@ -86,6 +85,10 @@ WANDB_KEY=your_wandb_api_key
 
 ```bash
 pip install -r requirements.txt
+```
+### Running the Training Script
+```
+python training/train.py
 ```
 ## Configuration
 
