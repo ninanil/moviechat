@@ -8,7 +8,7 @@ MovieChat is a project aimed at developing a movie-focused conversational AI by 
 
 ### Data Preparation
 
-The project integrates datasets like **Cornell Movie Dialogues** and **MovieQA**. It preprocesses the data, enriching it with metadata from IMDb and tracking changes using **Weights & Biases (W&B)** and the **Hugging Face Hub**.
+The project integrates datasets like **[Cornell Movie Dialogues](https://convokit.cornell.edu/documentation/movie.html)** and **[MovieQA](https://github.com/makarandtapaswi/MovieQA_benchmark?tab=readme-ov-file)**. It preprocesses the data, enriching it with metadata from IMDb and tracking changes using **Weights & Biases (W&B)** and the **Hugging Face Hub**.
 
 **Key Highlights**:
 
