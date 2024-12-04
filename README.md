@@ -30,6 +30,22 @@ The fine-tuning pipeline leverages **QLoRA** and **Unsloth** to efficiently adap
 
 For more details, refer to the [Fine-Tuning README](https://github.com/ninanil/moviechat/blob/master/fine-tune/README.md).  
 
+## Retrieval-Augmented Generation
+
+1. **Retrieve Movie Name**:
+   - `MovieNameRetriever` extracts the most relevant movie name from the user's query using similarity and mmr-based vector search.
+   - **Example**: user asks, "how does frodo get the ring?" — the system identifies **"the lord of the rings"** as the relevant movie.
+
+2. **Retrieve Context**:
+   - `MovieInfoRetriever` fetches detailed movie information (e.g., plot, cast) based on the retrieved movie name.
+
+3. **Generate Answer**:
+   - combines the retrieved context with a fine-tuned llama2 model to generate an accurate and contextually aware response.
+
+ 4. **Summarize History**
+   - summarizes the chat history to maintain context in long conversations.
+For more details, refer to the [Rag Pipeline README](https://github.com/ninanil/moviechat/blob/master/rag_pipeline/README.md).
+
 ## Workflows
 
 ### Data Preparation
