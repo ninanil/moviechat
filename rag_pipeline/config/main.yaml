@@ -1,0 +1,15 @@
+defaults:
+  - hydra: hydra.yaml
+  - data_loader: data_loader.yaml
+  - data_preprocessor: data_preprocessor.yaml
+  - vector_store: vector_store.yaml
+  - model_initializer: model_initializer.yaml
+  - retriever: retriever.yaml
+  - prompt_templates: prompt_templates.yaml
+  - memory_manager: memory_manager.yaml
+  - conversation_chain: conversation_chain.yaml
+
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+huggingface:
+  api_key: "YOUR_HF_API_KEY"

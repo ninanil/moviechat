@@ -1,0 +1,20 @@
+movie_vector_store:
+  embedding:
+    model_name: "all-MiniLM-L6-v2"
+  chroma:
+    collection_name:"movie_name_collection"
+    persist_directory:"./movie_chroma_data"
+  text_splitter:
+    chunk_size: 1000
+    chunk_overlap: 200
+
+movie_info_vector_store:
+  embedding:
+    model_name: "all-MiniLM-L6-v2"
+  chroma:
+    collection_name:"movie_collection"
+    persist_directory:"./chroma_data"
+  text_splitter:
+    chunk_size: 800
+    chunk_overlap: 150
+

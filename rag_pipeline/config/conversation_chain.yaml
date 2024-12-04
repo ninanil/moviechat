@@ -1,0 +1,4 @@
+conversation_chain:
+  response_length: 80
+  temperature: 0.7
+  top_k: 50

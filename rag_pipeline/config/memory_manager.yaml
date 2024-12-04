@@ -1,0 +1,3 @@
+memory_manager:
+  memory_key: "chat_history"
+  return_messages: true
