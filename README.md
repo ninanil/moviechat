@@ -41,8 +41,9 @@ For more details, refer to the [Fine-Tuning README](https://github.com/ninanil/m
 
 3. **Generate Answer**:
    - combines the retrieved context with a fine-tuned llama2 model to generate an accurate and contextually aware response.
+   - 
 
- 4. **Summarize History**
+ 4. **Summarize History**:
    - summarizes the chat history to maintain context in long conversations.
      
 For more details, refer to the [Rag Pipeline README](https://github.com/ninanil/moviechat/blob/master/rag_pipeline/README.md).
