@@ -44,6 +44,7 @@ For more details, refer to the [Fine-Tuning README](https://github.com/ninanil/m
 
  4. **Summarize History**
    - summarizes the chat history to maintain context in long conversations.
+     
 For more details, refer to the [Rag Pipeline README](https://github.com/ninanil/moviechat/blob/master/rag_pipeline/README.md).
 
 ## Workflows
